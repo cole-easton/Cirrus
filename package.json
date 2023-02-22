@@ -1,0 +1,27 @@
+{
+  "name": "cirrus",
+  "version": "0.0.1",
+  "description": "A social media platform for anonymously describing your friends",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cole-easton/Cirrus.git"
+  },
+  "author": "Cole Easton",
+  "license": "",
+  "devDependencies": {
+    "eslint": "^8.34.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.20"
+  },
+  "bugs": {
+    "url": "https://github.com/cole-easton/Cirrus/issues"
+  },
+  "homepage": "https://github.com/cole-easton/Cirrus#readme"
+}
