@@ -2,6 +2,7 @@ import * as http from 'http';
 import * as url from 'url';
 import * as query from 'querystring';
 import * as fileHandler from './fileHandler.js';
+import * as endpoints from './endpoints.js';
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
@@ -33,6 +34,9 @@ const onRequest = (request, response) => {
       case 'index.html':
         fileHandler.getFile(request, response, 'index.html');
         break;
+      case 'addUser':
+        parseBody(request, request, (req, res, bodyParams) =>
+          endpoints.addUser(req, res, bodyParams));
       default:
         fileHandler.getNotFound(request, response);
         break;
