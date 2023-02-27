@@ -12,8 +12,8 @@
     "type": "git",
     "url": "git+https://github.com/cole-easton/Cirrus.git"
   },
+  "type": "module",
   "author": "Cole Easton",
-  "license": "",
   "devDependencies": {
     "eslint": "^8.34.0",
     "eslint-config-airbnb": "^19.0.4",
