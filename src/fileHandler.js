@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as url from 'url';
 
-//https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
-//The following line is thanks to the above resource
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url)); // eslint-disable-line
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+// The following line is thanks to the above resource
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url)); 
 
 const directory = {};
 const notFound = fs.readFileSync(`${__dirname}/client/notFound.html`);

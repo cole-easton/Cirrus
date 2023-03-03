@@ -26,23 +26,24 @@ const parseBody = (request, response, handler) => {
   });
 };
 
+const routes = {
+  addUser: endpoints.addUser,
+  getFriends: endpoints.getFriends,
+  requestFriend: endpoints.requestFriend,
+  addDescriptors: endpoints.addDescriptors,
+  getDescriptors: endpoints.getDescriptors,
+};
+
 const onRequest = (request, response) => {
-  const pathname = url.parse(request.url).pathname.substring(1);
+  const pathname = url.parse(request.url).pathname.substring(1) || 'index.html';
   if (!fileHandler.getFile(request, response, pathname)) {
-    switch (pathname) {
-      case '':
-      case 'index.html':
-        fileHandler.getFile(request, response, 'index.html');
-        break;
-      case 'addUser':
-        parseBody(request, request, (req, res, bodyParams) => {
-          endpoints.addUser(req, res, bodyParams);
-        });
-        break;
-      default:
+    parseBody(request, response, (req, res, bodyParams) => {
+      if (routes[pathname]) {
+        routes[pathname](req, res, bodyParams);
+      } else {
         fileHandler.getNotFound(request, response);
-        break;
-    }
+      }
+    });
   }
 };
 

@@ -4,5 +4,8 @@
     "no-underscore-dangle" : "off",
 	"no-plusplus": "off",
     "import/extensions": "off"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020
   }
 }
