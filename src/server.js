@@ -35,8 +35,10 @@ const onRequest = (request, response) => {
         fileHandler.getFile(request, response, 'index.html');
         break;
       case 'addUser':
-        parseBody(request, request, (req, res, bodyParams) =>
-          endpoints.addUser(req, res, bodyParams));
+        parseBody(request, request, (req, res, bodyParams) => {
+          endpoints.addUser(req, res, bodyParams);
+        });
+        break;
       default:
         fileHandler.getNotFound(request, response);
         break;

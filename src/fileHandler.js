@@ -3,7 +3,7 @@ import * as url from 'url';
 
 //https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
 //The following line is thanks to the above resource
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url)); // eslint-disable-line
 
 const directory = {};
 const notFound = fs.readFileSync(`${__dirname}/client/notFound.html`);
@@ -14,7 +14,9 @@ fs.readdirSync(`${__dirname}/client`).forEach((path) => {
 console.log(directory);
 
 /**
- * Writes a response consisting of the contents of filename.  Returns false if this file does not exist in client folder; returns true if the file is written successfully.
+ * Writes a response consisting of the contents of filename.  
+ * Returns false if this file does not exist in client folder; 
+ * returns true if the file is written successfully.
  * @param {Request} request the request for this resource
  * @param {Response} response the response to write to
  * @param {String} filename should be relative to 'client/'

@@ -16,90 +16,94 @@ const friendships = {};
  */
 const descriptions = {};
 
-async function addUser(username, password) {
-    bcrypt.hash(password, 10, function (err, hash) {
-        if (err) {
-            return response(500, "Server error")
-        }
-        if (users[username]) {
-            return response(403, "Username is already in use");
-        }
-        users[username] = {
-            username: username,
-            passwordHash: hash
-        }
-        return response(204, "");
-    });
-}
-
-function getFriends(username, password) {
-    bcrypt.compare(password, user[username].passwordHash).then(function (result) {
-        if (result) {
-            return friendships[username].where(friend => friendships[friend].includes(username));
-        }
-        else {
-            return response(401, "Not signed in");
-        }
-    });
-}
-
-function requestFriend(requester, friend, password) {
-    bcrypt.compare(password, user[username].passwordHash).then(function (result) {
-        if (result) {
-            friendships[requester].push(friend);
-            return true;
-        }
-        else {
-            return response(401, "Not signed in");
-        }
-    });
-}
-
-function addDescriptors(desciber, describee, words, password) {
-    bcrypt.compare(password, user[username].passwordHash).then(function (result) {
-        if (result) {
-            if (areFriends(desciber, describee)) {
-                if (words.length === 10) {
-                    descriptions[descibee][describer] = words;
-                    return response(204, "Descriptors added")
-                }
-                else {
-                    return(400, "words must be an array of length 10");
-                }
-            }
-            else {
-                return response(403, "Both users must add each other as friends in order to add descrptors");
-            }
-        }
-        else {
-            return response(401, "Not signed in");
-        }
-    });
-}
-
-function getDescriptors(username, password) {
-    bcrypt.compare(password, user[username].passwordHash).then(function (result) {
-        if (result) {
-            const descriptors = [];
-            for(describer in descriptions[username]) {
-                descriptors.push(descriptions[describer]);
-            }
-            return response(200, descriptors);
-        }
-        else {
-            return response(401, "Not signed in");
-        }
-    });
+function response(status, body) {
+  return {
+    status,
+    body,
+  };
 }
 
 function areFriends(user1, user2) {
-    return friendships[user1].includes(user2) && friendships[user2].includes(user1);
+  return friendships[user1].includes(user2) && friendships[user2].includes(user1);
 }
 
-function response(status, body) {
-    return {
-        status: status,
-        body: body
-    }
+export function addUser(username, password) {
+  return new Promise((resolve) => {
+    bcrypt.hash(password, 10, (err, hash) => {
+      if (err) {
+        resolve(response(500, 'Server error'));
+      }
+      if (users[username]) {
+        resolve(response(403, 'Username is already in use'));
+      }
+      users[username] = {
+        username,
+        passwordHash: hash,
+      };
+      resolve(response(204, ''));
+    });
+  });
 }
 
+export function getFriends(username, password) {
+  return new Promise((resolve) => {
+    bcrypt.compare(password, users[username].passwordHash).then((result) => {
+      if (result) {
+        resolve(response(200, friendships[username]
+          .where((friend) => friendships[friend].includes(username))));
+      }
+
+      resolve(response(401, 'Not signed in'));
+    });
+  });
+}
+
+export function requestFriend(requester, friend, password) {
+  return new Promise((resolve) => {
+    bcrypt.compare(password, users[requester].passwordHash).then((result) => {
+      if (result) {
+        friendships[requester].push(friend);
+        resolve(response(204, 'Successfully submitted friend request'));
+      }
+
+      resolve(response(401, 'Not signed in'));
+    });
+  });
+}
+
+export function addDescriptors(describer, describee, words, password) {
+  return new Promise((resolve) => {
+    bcrypt.compare(password, users[describer].passwordHash).then((result) => {
+      if (result) {
+        if (areFriends(describer, describee)) {
+          if (words.length === 10) {
+            descriptions[describee][describer] = words;
+            resolve(response(204, 'Descriptors added'));
+          }
+
+          resolve(response(400, 'words must be an array of length 10'));
+        }
+
+        resolve(response(403, 'Both users must add each other as friends in order to add descrptors'));
+      }
+
+      resolve(response(401, 'Not signed in'));
+    });
+  });
+}
+
+export function getDescriptors(username, password) {
+  return new Promise((resolve) => {
+    bcrypt.compare(password, users[username].passwordHash).then((result) => {
+      if (result) {
+        const descriptors = [];
+        descriptions[username].array.forEach((descriptionList) => {
+          descriptors.push(descriptionList);
+        });
+        resolve(response(200, descriptors));
+      }
+
+      resolve(response(401, 'Not signed in'));
+    });
+  });
+}
