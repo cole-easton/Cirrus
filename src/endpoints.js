@@ -14,6 +14,25 @@ function writeResponse(response, result, head = false) {
   response.end();
 }
 
+export function authenticate(request, response, responseBody) {
+  if (request.method === 'POST') {
+    if (responseBody.username && responseBody.password) {
+      dataHandler.authenticate(responseBody.username, responseBody.password)
+        .then((result) => writeResponse(response, result));
+    } else {
+      writeResponse(response, {
+        status: 400,
+        body: 'username and password fields are required.',
+      });
+    }
+  } else {
+    writeResponse(response, {
+      status: 405,
+      body: "You may only use 'POST' with this endpoint.",
+    });
+  }
+}
+
 export function addUser(request, response, responseBody) {
   if (request.method === 'POST') {
     if (responseBody.username && responseBody.password) {

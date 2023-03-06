@@ -27,6 +27,7 @@ const parseBody = (request, response, handler) => {
 };
 
 const routes = {
+  authenticate: endpoints.authenticate,
   addUser: endpoints.addUser,
   getFriends: endpoints.getFriends,
   requestFriend: endpoints.requestFriend,

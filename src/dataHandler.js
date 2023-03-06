@@ -48,6 +48,21 @@ function areFriends(user1, user2) {
   return friendships[user1].includes(user2) && friendships[user2].includes(user1);
 }
 
+export function authenticate(username, password) {
+  return new Promise((resolve) => {
+    if (users[username]) {
+      bcrypt.compare(password, users[username].passwordHash).then((matches) => {
+        if (matches) {
+          resolve(response(200, 'Successful Authentication'));
+        }
+        resolve(response(401, 'Incorrect password'));
+      });
+    } else {
+      resolve(response(404, 'Username not found'));
+    }
+  });
+}
+
 export function addUser(username, password) {
   return new Promise((resolve) => {
     bcrypt.hash(password, 10, (err, hash) => {
@@ -86,13 +101,21 @@ export function getFriends(username, password) {
 
 export function requestFriend(requester, friend, password) {
   return new Promise((resolve) => {
-    bcrypt.compare(password, users[requester].passwordHash).then((result) => {
-      if (result) {
-        friendships[requester].push(friend);
-        resolve(response(204, 'Successfully submitted friend request'));
-      }
-      resolve(response(401, 'Not signed in'));
-    });
+    if (users[requester] && users[friend]) {
+      bcrypt.compare(password, users[requester].passwordHash).then((result) => {
+        if (result) {
+          if (!friendships[requester].includes(friend)) {
+            friendships[requester].push(friend);
+            resolve(response(204, 'Successfully submitted friend request.'));
+          } else {
+            resolve(response(204, 'Request has already been submitted.'));
+          }
+        }
+        resolve(response(401, 'Not signed in'));
+      });
+    } else {
+      resolve(response(404, `User ${users[requester] ? users[friend] : users[requester]} does not exist.`));
+    }
   });
 }
 
@@ -109,7 +132,7 @@ export function addDescriptors(describer, describee, words, password) {
               descriptions[describee][describer] = words;
               resolve(response(204, 'Descriptors added'));
             }
-            resolve(response(400, `words must be an array of length 10, not length ${words.length}`));
+            resolve(response(400, 'Exactly 10 descriptors are required.'));
           }
           resolve(response(403, 'Both users must add each other as friends in order to add descrptors'));
         }
