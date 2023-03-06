@@ -32,6 +32,7 @@ const routes = {
   requestFriend: endpoints.requestFriend,
   addDescriptors: endpoints.addDescriptors,
   getDescriptors: endpoints.getDescriptors,
+  compileDescriptors: endpoints.compileDescriptors,
 };
 
 const onRequest = (request, response) => {

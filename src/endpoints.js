@@ -17,8 +17,8 @@ function writeResponse(response, result, head = false) {
 export function addUser(request, response, responseBody) {
   if (request.method === 'POST') {
     if (responseBody.username && responseBody.password) {
-      dataHandler.addUser(responseBody.username, response.password)
-        .then((result) => writeResponse(response, JSON.parse(result)));
+      dataHandler.addUser(responseBody.username, responseBody.password)
+        .then((result) => writeResponse(response, result));
     } else {
       writeResponse(response, {
         status: 400,
@@ -34,14 +34,21 @@ export function addUser(request, response, responseBody) {
 }
 
 export function getFriends(request, response, responseBody) {
-  if (responseBody.username && responseBody.password) {
-    dataHandler.getFriends(responseBody.username, responseBody.password)
-      .then((result) => writeResponse(response, result));
+  if (request.method === 'POST') {
+    if (responseBody.username && responseBody.password) {
+      dataHandler.getFriends(responseBody.username, responseBody.password)
+        .then((result) => writeResponse(response, result));
+    } else {
+      writeResponse(response, {
+        status: 400,
+        body: 'username and password fields are required.',
+      });
+    }
   } else {
     writeResponse(response, {
-      status: 400,
-      body: 'username and password fields are required.',
-    }, request.method === 'HEAD');
+      status: 405,
+      body: "You may only use 'POST' with this endpoint.",
+    });
   }
 }
 
@@ -49,7 +56,7 @@ export function requestFriend(request, response, responseBody) {
   if (request.method === 'POST') {
     if (responseBody.requester && responseBody.friend && responseBody.password) {
       dataHandler.requestFriend(responseBody.requester, responseBody.friend, responseBody.password)
-        .then((result) => writeResponse(response, JSON.parse(result)));
+        .then((result) => writeResponse(response, result));
     } else {
       writeResponse(response, {
         status: 400,
@@ -66,15 +73,23 @@ export function requestFriend(request, response, responseBody) {
 
 export function addDescriptors(request, response, responseBody) {
   if (request.method === 'POST') {
-    if (responseBody.desciber && responseBody.describee
+    if (responseBody.describer && responseBody.describee
       && responseBody.words && responseBody.password) {
-      dataHandler.requestFriend(
-        responseBody.describer,
-        responseBody.describee,
-        responseBody.words,
-        responseBody.password,
-      )
-        .then((result) => writeResponse(response, JSON.parse(result)));
+      try {
+        const words = JSON.parse(responseBody.words);
+        dataHandler.addDescriptors(
+          responseBody.describer,
+          responseBody.describee,
+          words,
+          responseBody.password,
+        )
+          .then((result) => writeResponse(response, result));
+      } catch (err) {
+        writeResponse(response, {
+          status: 400,
+          body: `parameter words is invalid JSON: ${err}`,
+        });
+      }
     } else {
       writeResponse(response, {
         status: 400,
@@ -90,13 +105,35 @@ export function addDescriptors(request, response, responseBody) {
 }
 
 export function getDescriptors(request, response, responseBody) {
-  if (responseBody.username && responseBody.password) {
-    dataHandler.getFriends(responseBody.username, responseBody.password)
-      .then((result) => writeResponse(response, result));
+  if (request.method === 'POST') {
+    if (responseBody.describer && responseBody.describee && responseBody.password) {
+      dataHandler
+        .getDescriptors(responseBody.describer, responseBody.describee, responseBody.password)
+        .then((result) => writeResponse(response, result));
+    } else {
+      writeResponse(response, {
+        status: 400,
+        body: 'describer, describee, and password fields are required.',
+      });
+    }
+  }
+}
+
+export function compileDescriptors(request, response, responseBody) {
+  if (request.method === 'POST') {
+    if (responseBody.username && responseBody.password) {
+      dataHandler.compileDescriptors(responseBody.username, responseBody.password)
+        .then((result) => writeResponse(response, result));
+    } else {
+      writeResponse(response, {
+        status: 400,
+        body: 'username and password fields are required.',
+      });
+    }
   } else {
     writeResponse(response, {
-      status: 400,
-      body: 'username and password fields are required.',
-    }, request.method === 'HEAD');
+      status: 405,
+      body: "You may only use 'POST' with this endpoint.",
+    });
   }
 }
