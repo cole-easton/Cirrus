@@ -83,16 +83,11 @@ export function addUser(username, password) {
   });
 }
 
-export function getFriends(username, password) {
+export function getFriends(username) {
   return new Promise((resolve) => {
     if (users[username]) {
-      bcrypt.compare(password, users[username].passwordHash).then((matches) => {
-        if (matches) {
-          resolve(response(200, friendships[username]
-            .filter((friend) => friendships[friend].includes(username))));
-        }
-        resolve(response(401, 'Not signed in'));
-      });
+      resolve(response(200, friendships[username]
+        .filter((friend) => friendships[friend].includes(username))));
     } else {
       resolve(response(404, 'User does not exist.'));
     }

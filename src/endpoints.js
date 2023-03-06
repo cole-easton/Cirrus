@@ -1,4 +1,6 @@
 import * as dataHandler from './dataHandler.js';
+import * as url from 'url';
+import * as query from 'querystring';
 
 /**
  * Writes the stringified result to response
@@ -53,21 +55,36 @@ export function addUser(request, response, responseBody) {
 }
 
 export function getFriends(request, response, responseBody) {
+  const head = request.method === 'POST';
   if (request.method === 'POST') {
-    if (responseBody.username && responseBody.password) {
-      dataHandler.getFriends(responseBody.username, responseBody.password)
+    if (responseBody.username) {
+      dataHandler.getFriends(responseBody.username)
         .then((result) => writeResponse(response, result));
     } else {
       writeResponse(response, {
         status: 400,
-        body: 'username and password fields are required.',
+        body: 'username fields is required.',
       });
     }
-  } else {
+  } 
+  else if (request.method === 'GET' || head) {
+    const params = query.parse(url.parse(request.url).query);
+    if (params.username) {
+      dataHandler.getFriends(params.username)
+        .then((result) => writeResponse(response, result, head));
+    }
+    else {
+      writeResponse(response, {
+        status: 400,
+        body: 'username fields is required.',
+      }, head);
+    }
+  }
+  else {
     writeResponse(response, {
       status: 405,
-      body: "You may only use 'POST' with this endpoint.",
-    });
+      body: "You may only use 'POST', 'GET', or 'HEAD' with this endpoint.",
+    }, head);
   }
 }
 

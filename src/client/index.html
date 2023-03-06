@@ -323,7 +323,7 @@
                     'Content-Type': 'application/x-www-form-urlencoded',
                     Accept: 'application/json',
                 },
-                body: `username=${username}&password=${password}`,
+                body: `username=${username}`,
             }).then(result => result.json()).then(json => {
                 friendsList.innerHTML = '';
                 json.body.forEach(friend => friendsList.innerHTML += `<li>${friend}</li>`);
@@ -351,6 +351,9 @@
                     }
                 });
                 let keys = [...Object.keys(weights)];
+                if (!keys.length) {
+                    wordCloud.innerHTML = '<span style = "color: red;">NO DESCRIPTORS YET</span>';
+                }
                 while (keys.length) {
                     let index = Math.floor(Math.random()*keys.length);
                     const word = keys[index];
