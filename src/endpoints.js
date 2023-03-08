@@ -104,6 +104,25 @@ export function requestFriend(request, response, responseBody) {
   }
 }
 
+export function getIncomingFriendRequests(request, response, responseBody) {
+  if (request.method === 'POST') {
+    if (responseBody.requester && responseBody.friend && responseBody.password) {
+      dataHandler.getIncomingFriendRequests(responseBody.username, responseBody.password)
+        .then((result) => writeResponse(response, result));
+    } else {
+      writeResponse(response, {
+        status: 400,
+        body: 'username and password fields are required.',
+      });
+    }
+  } else {
+    writeResponse(response, {
+      status: 405,
+      body: "You may only use 'POST' with this endpoint.",
+    });
+  }
+}
+
 export function addDescriptors(request, response, responseBody) {
   if (request.method === 'POST') {
     if (responseBody.describer && responseBody.describee

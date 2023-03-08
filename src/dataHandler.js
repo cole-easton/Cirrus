@@ -22,6 +22,8 @@ const users = {
 
 };
 
+const incomingFriendRequests = {};
+
 /**
  * friendships[username] gives all of the friends/friend requests for user.
  * If user1 and user2 have each other in their friend request lists, they are friends
@@ -97,10 +99,19 @@ export function getFriends(username) {
 export function requestFriend(requester, friend, password) {
   return new Promise((resolve) => {
     if (users[requester] && users[friend]) {
-      bcrypt.compare(password, users[requester].passwordHash).then((result) => {
-        if (result) {
+      bcrypt.compare(password, users[requester].passwordHash).then((matches) => {
+        if (matches) {
           if (!friendships[requester].includes(friend)) {
             friendships[requester].push(friend);
+            if (incomingFriendRequests[friend]?.includes(requester)) {
+              incomingFriendRequests[friend]
+                .splice(incomingFriendRequests[friend].indexOf(requester), 1);
+            } else {
+              if (!incomingFriendRequests[friend]) {
+                incomingFriendRequests[friend] = [];
+              }
+              incomingFriendRequests[friend].push(requester);
+            }
             resolve(response(204, 'Successfully submitted friend request.'));
           } else {
             resolve(response(204, 'Request has already been submitted.'));
@@ -114,11 +125,27 @@ export function requestFriend(requester, friend, password) {
   });
 }
 
+export function getIncomingFriendRequests(username, password) {
+  return new Promise((resolve) => {
+    if (users[username]) {
+      bcrypt.compare(password, users[username].passwordHash).then((matches) => {
+        if (matches) {
+          resolve(response(200, incomingFriendRequests[username]));
+        } else {
+          resolve(response(401, 'Not signed in'));
+        }
+      });
+    } else {
+      resolve(response(404, `User ${users[username]} does not exist.`));
+    }
+  });
+}
+
 export function addDescriptors(describer, describee, words, password) {
   return new Promise((resolve) => {
     if (users[describer] && users[describee]) {
-      bcrypt.compare(password, users[describer].passwordHash).then((result) => {
-        if (result) {
+      bcrypt.compare(password, users[describer].passwordHash).then((matches) => {
+        if (matches) {
           if (areFriends(describer, describee)) {
             if (words.length === 10) {
               if (!descriptions[describee]) {
@@ -141,8 +168,8 @@ export function addDescriptors(describer, describee, words, password) {
 
 export function getDescriptors(describer, describee, password) {
   return new Promise((resolve) => {
-    bcrypt.compare(password, users[describer].passwordHash).then((result) => {
-      if (result) {
+    bcrypt.compare(password, users[describer].passwordHash).then((matches) => {
+      if (matches) {
         if (descriptions[describee] && descriptions[describee][describer]) {
           resolve(response(200, descriptions[describee][describer]));
         } else if (users[describer] && users[describee]) {

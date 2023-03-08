@@ -34,6 +34,7 @@ const routes = {
   addDescriptors: endpoints.addDescriptors,
   getDescriptors: endpoints.getDescriptors,
   compileDescriptors: endpoints.compileDescriptors,
+  getIncomingFriendRequests: endpoints.getIncomingFriendRequests,
 };
 
 const onRequest = (request, response) => {
