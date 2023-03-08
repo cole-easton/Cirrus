@@ -11,6 +11,12 @@ fs.readdirSync(`${__dirname}/client`).forEach((path) => {
   directory[path] = fs.readFileSync(`${__dirname}/client/${path}`);
 });
 
+const MIMETypes = {
+  '.html': 'text/html',
+  '.css': 'text/css',
+  '.js': 'text/javascript',
+};
+
 /**
  * Writes a response consisting of the contents of filename.
  * Returns false if this file does not exist in client folder;
@@ -21,7 +27,8 @@ fs.readdirSync(`${__dirname}/client`).forEach((path) => {
  */
 export function getFile(request, response, filename) {
   if (directory[filename]) {
-    response.writeHead(200, { 'Content-Type': 'text/html' });
+    const extension = filename.substring(filename.lastIndexOf('.'));
+    response.writeHead(200, { 'Content-Type': MIMETypes[extension] });
     if (request.method === 'GET') {
       response.write(directory[filename]);
     }
