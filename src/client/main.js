@@ -4,6 +4,7 @@ let selectedFriendName;
 const loginForm = document.querySelector('#login-form');
 const userContent = document.querySelector('#user-content');
 const friendsList = document.querySelector('#friends-list');
+const requestList = document.querySelector('#incoming-requests-list');
 const descriptorArea = document.querySelector('#descriptor-area');
 const selectedFriend = document.querySelector('#selected-friend');
 const descriptorInputs = document.querySelectorAll('#descriptor-list input');
@@ -59,11 +60,30 @@ function fetchAndPopulateWordCloud() {
   });
 }
 
+function fetchAndPopulateIncomingRequestList() {
+  fetch('/getIncomingFriendRequests', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+    },
+    body: `username=${username}&password=${password}`,
+  }).then((result) => result.json()).then((json) => {
+    if (json.body?.forEach) {
+      requestList.innerHTML = '';
+      json.body.forEach((user) => {
+        requestList.innerHTML += `<li><span>${user}</span><button id = "accept-${user}">Accept</button><li>`;
+      });
+    }
+  });
+}
+
 function login() {
   loginForm.style.display = 'none';
   userContent.style.display = 'flex';
   fetchAndPopulateFriendsList();
   fetchAndPopulateWordCloud();
+  fetchAndPopulateIncomingRequestList();
 }
 
 document.querySelector('#login').onclick = () => {
@@ -119,6 +139,23 @@ friendsList.onclick = (e) => {
           descriptorInputs[i].value = json.body[i];
         }
       }
+    });
+  }
+};
+
+requestList.onclick = (e) => {
+  if (e.target.nodeName === 'BUTTON') {
+    const friendName = e.target.id.substring(7); // remove "accept-" from id
+    fetch('/requestFriend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
+      },
+      body: `requester=${username}&friend=${friendName}&password=${password}`,
+    }).then(() => {
+      fetchAndPopulateFriendsList();
+      fetchAndPopulateIncomingRequestList();
     });
   }
 };

@@ -106,7 +106,7 @@ export function requestFriend(request, response, responseBody) {
 
 export function getIncomingFriendRequests(request, response, responseBody) {
   if (request.method === 'POST') {
-    if (responseBody.requester && responseBody.friend && responseBody.password) {
+    if (responseBody.username && responseBody.password) {
       dataHandler.getIncomingFriendRequests(responseBody.username, responseBody.password)
         .then((result) => writeResponse(response, result));
     } else {

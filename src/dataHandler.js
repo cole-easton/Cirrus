@@ -19,10 +19,14 @@ const users = {
     passwordHash: '$2b$10$aJvcMuyaAHfQuWZSuhc3gOtFKX8ZiSxHqIf.tbwOyrMs7gDfV.h8W', // password 1234
     dateCreated: 0,
   },
-
+  anIndeedRatherLongUserName: {
+    username: 'example',
+    passwordHash: '$2b$10$aJvcMuyaAHfQuWZSuhc3gOtFKX8ZiSxHqIf.tbwOyrMs7gDfV.h8W', // password 1234
+    dateCreated: 0,
+  },
 };
 
-const incomingFriendRequests = {};
+const incomingFriendRequests = { example3: ['example', 'example2', 'anIndeedRatherLongUserName'] };
 
 /**
  * friendships[username] gives all of the friends/friend requests for user.
@@ -30,8 +34,10 @@ const incomingFriendRequests = {};
  */
 const friendships = {
   example: ['example2', 'example3'],
-  example2: ['example'],
+  example2: ['example', 'example3'],
   example3: [],
+  anIndeedRatherLongUserName: ['example3'],
+
 };
 
 /**
@@ -103,14 +109,17 @@ export function requestFriend(requester, friend, password) {
         if (matches) {
           if (!friendships[requester].includes(friend)) {
             friendships[requester].push(friend);
-            if (incomingFriendRequests[friend]?.includes(requester)) {
-              incomingFriendRequests[friend]
-                .splice(incomingFriendRequests[friend].indexOf(requester), 1);
+            // if we have incoming request, now we're friends, so remove
+            if (incomingFriendRequests[requester]?.includes(friend)) { 
+              incomingFriendRequests[requester]
+                .splice(incomingFriendRequests[requester].indexOf(friend), 1);
             } else {
               if (!incomingFriendRequests[friend]) {
                 incomingFriendRequests[friend] = [];
               }
-              incomingFriendRequests[friend].push(requester);
+              if (!incomingFriendRequests[friend].includes(requester)) {
+                incomingFriendRequests[friend].push(requester);
+              }
             }
             resolve(response(204, 'Successfully submitted friend request.'));
           } else {
@@ -130,7 +139,7 @@ export function getIncomingFriendRequests(username, password) {
     if (users[username]) {
       bcrypt.compare(password, users[username].passwordHash).then((matches) => {
         if (matches) {
-          resolve(response(200, incomingFriendRequests[username]));
+          resolve(response(200, incomingFriendRequests[username] || []));
         } else {
           resolve(response(401, 'Not signed in'));
         }

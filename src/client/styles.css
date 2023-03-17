@@ -77,7 +77,8 @@ button:active {
     margin: 10px 0;
 }
 
-#friends-list {
+#friends-list,
+#incoming-requests-list {
     list-style: none;
 }
 
@@ -94,6 +95,15 @@ button:active {
 
 #friends-list li:active {
     filter: brightness(80%);
+}
+
+#incoming-requests-list>li>span {
+    display: inline-block;
+    width: 150px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: 1.5em;
 }
 
 #descriptor-area {
