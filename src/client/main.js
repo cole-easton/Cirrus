@@ -213,4 +213,5 @@ document.querySelector('#add-friend').onclick = () => {
   });
 };
 
+document.querySelector('#refresh-requests').onclick = fetchAndPopulateIncomingRequestList;
 document.querySelector('#refresh-cloud').onclick = fetchAndPopulateWordCloud;

@@ -110,7 +110,7 @@ export function requestFriend(requester, friend, password) {
           if (!friendships[requester].includes(friend)) {
             friendships[requester].push(friend);
             // if we have incoming request, now we're friends, so remove
-            if (incomingFriendRequests[requester]?.includes(friend)) { 
+            if (incomingFriendRequests[requester]?.includes(friend)) {
               incomingFriendRequests[requester]
                 .splice(incomingFriendRequests[requester].indexOf(friend), 1);
             } else {
