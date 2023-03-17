@@ -206,6 +206,8 @@ document.querySelector('#add-friend').onclick = () => {
       friendError.style.display = 'none';
       friendSuccess.style.display = 'block';
       document.querySelector('#requestee-name').textContent = friendName;
+      fetchAndPopulateFriendsList();
+      fetchAndPopulateIncomingRequestList();
     } else {
       friendSuccess.style.display = 'none';
       friendError.style.display = 'block';
