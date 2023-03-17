@@ -121,6 +121,8 @@ button:active {
     border: 3px solid #8bd;
     border-radius: 8px;
     width: fit-content;
+    min-width: 300px;
+    min-height: 200px;
     max-width: 400px;
     padding: 2em;
     color: #8bd;
