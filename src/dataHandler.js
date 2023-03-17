@@ -156,16 +156,16 @@ export function addDescriptors(describer, describee, words, password) {
       bcrypt.compare(password, users[describer].passwordHash).then((matches) => {
         if (matches) {
           if (areFriends(describer, describee)) {
-            if (words.length === 10) {
+            if (words.length) {
               if (!descriptions[describee]) {
                 descriptions[describee] = {};
               }
               descriptions[describee][describer] = words;
               resolve(response(204, 'Descriptors added'));
             }
-            resolve(response(400, 'Exactly 10 descriptors are required.'));
+            resolve(response(400, 'At least one descriptor is required'));
           }
-          resolve(response(403, 'Both users must add each other as friends in order to add descrptors'));
+          resolve(response(403, 'Both users must add each other as friends in order to add descriptors'));
         }
         resolve(response(401, 'Not signed in'));
       });
